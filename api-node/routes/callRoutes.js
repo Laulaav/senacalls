@@ -4,9 +4,9 @@ const Call = require('../models/Call')
 
 //Criar Chamados
 route.post('/', async (req, res) => {
-    const{computer, code, room, issue} = req.body
+    const{computer, code, room, issue, image, type} = req.body
 
-    if(!computer || !code || !room || !issue) {
+    if(!computer || !code || !room || !issue || !image || !type) {
         res.status(422).json({error: 'Preencha todos os dados!!'})
         return
     }
@@ -15,7 +15,9 @@ route.post('/', async (req, res) => {
         computer,
         code,
         room,
-        issue
+        issue,
+        image,
+        type
     }
 
     try{
@@ -29,7 +31,7 @@ route.post('/', async (req, res) => {
 
 
 //Listar Chamados
-route.get('/', async (req,res) => {
+route.get('/list', async (req,res) => {
     try {
         const call = await Call.find()
 
@@ -37,6 +39,56 @@ route.get('/', async (req,res) => {
     } catch (error) {
         res.status(500).json(error)
     }
+})
+
+route.patch('/:id', async (req,res) => {
+
+    const id = req.params.id
+
+    const {computer, code, room, issue, image, type} = req.body
+
+    const call = {
+        computer,
+        code,
+        room,
+        issue,
+        image,
+        type
+    }
+
+    try {
+        const updateCall = await Call.updateOne({_id: id}, call)
+
+        if(updateCall.matchedCount === 0){
+            res.status(422).json({error: 'Chamado não Encontrada'})
+        }
+
+        res.status(200).json(call)
+    } catch (error) {
+        res.status(500).json({error: error})
+    }
+})
+
+
+route.delete('/:id', async (req,res) => {
+    const id = req.params.id
+
+    const call = await Call.findOne({_id:id})
+    
+    if(!call){
+        res.status(422).json({error: 'Chamado não Encontrado'})
+        return
+    }
+
+    try {
+        await Call.deleteOne({_id: id})
+
+        res.status(200).json({message: 'Chamado Deletado com Sucesso!!'})
+    } catch (error){
+        res.status(500).json({error: error})
+    }
+
+
 })
 
 

@@ -5,15 +5,16 @@ import ChamEmAndamento from "../components/ChamEmAndamento";
 import LogoSupEsq from "../components/logoSupEsq";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import BotoesFooter from "../components/botoesFooter";
+import api from "../services/connection";
 
 function Home() {
   const [chamados, setChamados] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get("https://localhost:3000/call")
-      .then((response) => setChamados(response.data))
-      .catch((error) => console.error("Erro ao buscar dados:", error));
+  useEffect( async () => {
+      await api
+    .get("/call")
+    .then((response) => setChamados(response.data))
+    .catch((error) => console.error("Erro ao buscar dados:", error));
   }, []);
 
   return (
@@ -23,10 +24,10 @@ function Home() {
         <View style={styles.chamadosContainer}>
           {chamados.length > 0 ? (
             chamados.map((chamado, index) => {
-              if (chamado.tipo === "concluido") {
-                return <ChamConcluido key={index} num={chamado.num} descricao={chamado.descricao} />;
-              } else if (chamado.tipo === "emAndamento") {
-                return <ChamEmAndamento key={index} num={chamado.num} descricao={chamado.descricao} />;
+              if (chamado.type === "concluido") {
+                return <ChamConcluido key={index} num={chamado.code} descricao={chamado.issue} />;
+              } else if (chamado.type === "emAndamento") {
+                return <ChamEmAndamento key={index} num={chamado.code} descricao={chamado.issue} />;
               }
               return null;
             })

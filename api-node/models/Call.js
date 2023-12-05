@@ -4,7 +4,9 @@ const Call = mongoose.model('Call', {
     computer: String,
     code: String,
     room: String,
-    issue: String
+    issue: String,
+    image: String,
+    type: String
 })
 
 module.exports = Call
